@@ -1,0 +1,20 @@
+#!/bin/sh
+
+PATH=${PATH}:.
+
+F=`pitchphrase2wav "$1" $2`
+if [ $? -gt 0 ]
+then
+	echo "failed to generate wav - exiting."
+	exit 1
+fi
+
+if [ -f $F ]
+then
+	mplayer $F
+	rm -f $F
+	exit 0
+else
+	echo "wav was not generated. exiting."
+	exit 2
+fi
