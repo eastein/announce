@@ -1,0 +1,25 @@
+#!/usr/bin/env python
+
+import time
+import sys
+import zmqsub
+import subprocess
+
+if __name__ == '__main__' :
+	sub = zmqsub.JSONZMQPub(sys.argv[1])
+
+	while True :
+		try :
+			msg = sub.recv()
+			print 'recvd message %s' % msg
+			if 'text' in msg and 'pitch' in msg :
+				proc = subprocess.Popen(['bash', 'saypitchprase', msg['text'].encode('ascii', 'ignore'), str(msg['pitch'])], bufsize=1048576, stdin=None, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+				out, err = proc.communicate()
+				proc.wait()
+			else :
+				print 'msg not understood, ignored'
+		except zmqsub.NoMessagesException :
+			time.sleep(0.05)
+		#except :
+		#	print 'unk except, ignoring.'
+		#	time.sleep(0.05)
