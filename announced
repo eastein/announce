@@ -20,6 +20,6 @@ if __name__ == '__main__' :
 				print 'msg not understood, ignored'
 		except zmqsub.NoMessagesException :
 			time.sleep(0.05)
-		#except :
-		#	print 'unk except, ignoring.'
-		#	time.sleep(0.05)
+		except :
+			print 'unk except, ignoring.'
+			time.sleep(0.05)
