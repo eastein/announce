@@ -2,17 +2,78 @@
 
 import time
 import sys
+import json
 import zmqsub
 import subprocess
 
+# By Magnus Hetland (http://hetland.org/), props!
+def levenshtein(a,b):
+	"Calculates the Levenshtein distance between a and b."
+	n, m = len(a), len(b)
+	if n > m:
+		# Make sure n <= m, to use O(min(n,m)) space
+		a,b = b,a
+		n,m = m,n
+		
+	current = range(n+1)
+	for i in range(1,m+1):
+		previous, current = current, [i]+[0]*n
+		for j in range(1,n+1):
+			add, delete = previous[j]+1, current[j-1]+1
+			change = previous[j-1]
+			if a[j-1] != b[i-1]:
+				change = change + 1
+			current[j] = min(add, delete, change)
+			
+	return current[n]
+
+class RecordingSet(object) :
+	def __init__(self, recordings) :
+		self.recordings = recordings
+		self.toss_threshold_count = 10
+		self.toss_threshold_ratio = .2
+
+	def play(self, text) :
+		f = None
+		l = 1000000 # use maxint?
+		
+		for t,fn in self.recordings :
+			lev = levenshtein(t, text)
+			ratio = lev * 1.0 / len(t)
+			if lev > self.toss_threshold_count :
+				continue
+			if ratio > self.toss_threshold_ratio :
+				continue
+
+			if lev < l :
+				f = fn
+				continue
+
+		if f is not None :
+			proc = subprocess.Popen(['mplayer', f], bufsize=1048576, stdin=None, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+			out, err = proc.communicate()
+			proc.wait()
+			return True
+
+		return False
+ 
 if __name__ == '__main__' :
 	sub = zmqsub.JSONZMQPub(sys.argv[1])
+	try :
+		recordings = json.load(open(sys.argv[2]))
+	except IndexError :
+		recordings = []
+
+	rs = RecordingSet(recordings)
 
 	while True :
 		try :
 			msg = sub.recv()
 			print 'recvd message %s' % msg
 			if 'text' in msg and 'pitch' in msg :
+				if rs.play(msg['text']) :
+					continue
+
 				proc = subprocess.Popen(['bash', 'saypitchprase', msg['text'].encode('ascii', 'ignore'), str(msg['pitch'])], bufsize=1048576, stdin=None, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 				out, err = proc.communicate()
 				proc.wait()
