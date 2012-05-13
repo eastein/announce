@@ -1,0 +1,24 @@
+#!/usr/bin/env python
+
+import zmqsub
+import sys
+
+if __name__ == '__main__' :
+	try :
+		url = sys.argv[1]
+		text = sys.argv[2]
+
+		try :
+			pitch = sys.argv[3]
+		except IndexError :
+			pitch = 0
+
+	except (IndexError, ValueError) :
+		sys.stderr.write('usage: announcec <url> "<phrase>" [pitch]\n\nPitch is an integer. Negative numbers are deeper, postive higher.')
+		sys.exit(1)
+
+	c = zmqsub.JSONZMQConnectPub(url)
+	c.send({
+		'text' : text,
+		'pitch' : pitch
+	})
