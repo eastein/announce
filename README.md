@@ -21,4 +21,6 @@ Messages sent to the **announced** daemon have 2 required arguments: `text` and 
     spk = zmqsub.JSONZMQConnectPub('tcp://*:4900')
     spk.send({'text': 'flee for your lives, puny mortals', 'pitch' : 0})
 
-The above example would cause the `flee.mp3` file to be played back.
+The above example would cause the `flee.mp3` file to be played back.  It could also be accomplished by using **announcec**:
+
+    ./announcec 'tcp://*:4900' 'flee for your lives, puny mortals' 0
