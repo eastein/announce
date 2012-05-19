@@ -1,0 +1,49 @@
+#!/usr/bin/env python
+
+import mediorc
+import zmqsub
+import sys
+
+class AnnounceBot(mediorc.IRC) :
+	def __init__(self, server, nick, chan, client) :
+		self.client = client
+		mediorc.IRC.__init__(self, server, nick, chan)
+	
+	def on_join(self, c, e) :
+		self.initialize_pinger()
+
+	def on_pubmsg(self, c, e) :
+		nick = e.source().split("!")[0]
+		chan = e.target()
+		txt = e.arguments()[0]
+
+		spl = txt.split(' ', 1)
+		
+		if len(spl) == 2 and spl[0] == '!say':
+			self.client.send({
+				'text' : spl[1],
+				'pitch' : 0
+			})
+
+			self.connection.privmsg(chan, "It is spoken.")
+
+class AnnounceThread(mediorc.IRCThread) :
+	def __init__(self, server, nick, chan, client) :
+		self.bot_create = lambda: AnnounceBot(server, nick, chan, client)
+		mediorc.IRCThread.__init__(self)
+
+if __name__ == '__main__' :
+	try :
+		server = sys.argv[1]
+		nick = sys.argv[2]
+		chan = sys.argv[3]
+		announce_url = sys.argv[4]
+
+		client = zmqsub.JSONZMQConnectPub(announce_url)
+
+		s = AnnounceThread(server, nick, chan, client)
+	except IndexError :
+		print 'usage: announcebot <server> <nick> <channel> <announce_url>'
+		sys.exit(1)
+	
+	s.run()
