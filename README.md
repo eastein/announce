@@ -21,6 +21,38 @@ Messages sent to the **announced** daemon have 2 required arguments: `text` and 
     spk = zmqsub.JSONZMQConnectPub('tcp://*:4900')
     spk.send({'text': 'flee for your lives, puny mortals', 'pitch' : 0})
 
-The above example would cause the `flee.mp3` file to be played back.  It could also be accomplished by using **announcec**:
+<A name="toc1-23" title="Announcer Client: announcec" />
+# Announcer Client: announcec
+
+The above example would cause the `flee.mp3` file to be played back.  It could also be accomplished by using **announcec**, a client for the daemon:
 
     ./announcec 'tcp://*:4900' 'flee for your lives, puny mortals' 0
+
+<A name="toc1-30" title="Announcer Bot: announcebot" />
+# Announcer Bot: announcebot
+
+**announcebot** is an IRC bot that relies on **announced** to actually do the announcements.  Usage:
+
+    usage: announcebot <server> <nick> <channel> <announce_url>
+
+In this case, the announce_url is the part starting with `tcp://`
+
+<A name="toc1-39" title="Dependencies" />
+# Dependencies
+
+<A name="toc2-42" title="Needed for announced" />
+## Needed for announced
+
+* Festival, 2.1 sounds best. http://www.cstr.ed.ac.uk/downloads/festival/2.1/
+
+<A name="toc2-47" title="Needed for all" />
+## Needed for all
+
+* pyzmq
+* python
+
+<A name="toc2-53" title="Needed for announcebot" />
+## Needed for announcebot
+
+* python-irclib
+* mediorc - https://github.com/eastein/mediorc
