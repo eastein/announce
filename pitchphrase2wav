@@ -6,7 +6,7 @@ mv $T1 $T1.wav
 mv $T2 $T2.wav
 T1=$T1.wav
 T2=$T2.wav
-echo $1|text2wave > $T1
+echo "$1"|text2wave > $T1
 sox $T1 $T2 pitch $2
 rm -f $T1
 echo $T2
