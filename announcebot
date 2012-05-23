@@ -3,10 +3,12 @@
 import mediorc
 import zmqsub
 import sys
+import throttle_lib
 
 class AnnounceBot(mediorc.IRC) :
-	def __init__(self, server, nick, chan, client) :
+	def __init__(self, server, nick, chan, client, throttler) :
 		self.client = client
+		self.throttler = throttler
 		mediorc.IRC.__init__(self, server, nick, chan)
 	
 	def on_join(self, c, e) :
@@ -20,6 +22,10 @@ class AnnounceBot(mediorc.IRC) :
 		spl = txt.split(' ', 1)
 		
 		if len(spl) == 2 and spl[0] == '!say':
+			if not self.throttler.check() :
+				self.connection.privmsg(chan, "Slow up, bub.")
+				return
+
 			self.client.send({
 				'text' : spl[1],
 				'pitch' : 0
@@ -28,8 +34,8 @@ class AnnounceBot(mediorc.IRC) :
 			self.connection.privmsg(chan, "It is spoken.")
 
 class AnnounceThread(mediorc.IRCThread) :
-	def __init__(self, server, nick, chan, client) :
-		self.bot_create = lambda: AnnounceBot(server, nick, chan, client)
+	def __init__(self, server, nick, chan, client, throttler) :
+		self.bot_create = lambda: AnnounceBot(server, nick, chan, client, throttler)
 		mediorc.IRCThread.__init__(self)
 
 if __name__ == '__main__' :
@@ -38,12 +44,24 @@ if __name__ == '__main__' :
 		nick = sys.argv[2]
 		chan = sys.argv[3]
 		announce_url = sys.argv[4]
+		
+		thr_count = None
+		thr_period = None
+		thr_set = None
+		try :
+			thr_count = int(sys.argv[5])
+			thr_period = int(sys.argv[6])
+			thr_set = (thr_count, thr_period)
+		except IndexError :
+			if thr_count is not None :
+				raise
 
 		client = zmqsub.JSONZMQConnectPub(announce_url)
-
-		s = AnnounceThread(server, nick, chan, client)
+		throttler = throttle_lib.Throttler(thr_set)
+		
+		s = AnnounceThread(server, nick, chan, client, throttler)
 	except IndexError :
-		print 'usage: announcebot <server> <nick> <channel> <announce_url>'
+		print 'usage: announcebot <server> <nick> <channel> <announce_url> [<thr_count> <thr_period>]'
 		sys.exit(1)
 	
 	s.run()
