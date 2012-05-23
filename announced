@@ -38,7 +38,7 @@ class RecordingSet(object) :
 		l = 1000000 # use maxint?
 		
 		for t,fn in self.recordings :
-			lev = levenshtein(t, text)
+			lev = levenshtein(t.lower(), text.lower())
 			ratio = lev * 1.0 / len(t)
 			if lev > self.toss_threshold_count :
 				continue
@@ -58,11 +58,15 @@ class RecordingSet(object) :
 		return False
  
 if __name__ == '__main__' :
-	sub = zmqsub.JSONZMQPub(sys.argv[1])
 	try :
-		recordings = json.load(open(sys.argv[2]))
+		sub = zmqsub.JSONZMQPub(sys.argv[1])
+		try :
+			recordings = json.load(open(sys.argv[2]))
+		except IndexError :
+			recordings = []
 	except IndexError :
-		recordings = []
+		sys.stderr.write('usage: announced <announce_url> [<recordings_json_filename>]\n')
+		sys.exit(1)
 
 	rs = RecordingSet(recordings)
 
