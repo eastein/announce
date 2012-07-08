@@ -71,5 +71,8 @@ class JSONZMQConnectPub(object) :
 		self.s = self.c.socket(zmq.PUB)
 		self.s.connect(url)
 
+	# unreliable send, but won't block forever.
 	def send(self, msg) :
-		self.s.send(json.dumps(msg))
+		r, w, x = zmq.core.poll.select([], [self.s], [], 10.0)
+		if w :
+			self.s.send(json.dumps(msg))
