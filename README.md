@@ -50,9 +50,12 @@ In this case, the announce_url is the part starting with `tcp://`
 
 * pyzmq
 * python
+* sox
+* mplayer
 
 <A name="toc2-53" title="Needed for announcebot" />
 ## Needed for announcebot
 
 * python-irclib
 * mediorc - https://github.com/eastein/mediorc
+* dnspython
