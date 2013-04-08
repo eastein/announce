@@ -56,8 +56,42 @@ class RecordingSet(object) :
 			return True
 
 		return False
+
+class Switcher(object) :
+	pass
  
+class RPIGPIOSwitcher(Switcher) :
+	roomchannels = {
+		'upstairs' : 23,
+		'shop' : 24,
+		'lounge' : 25
+	}
+
+	def __init__(self) :
+		self.GPIO = __import__('RPi.GPIO').GPIO
+		self.GPIO.setmode(self.GPIO.BCM)
+		for ch in self.roomchannels.values() :
+			self.GPIO.setup(ch, self.GPIO.OUT)
+			self.GPIO.output(ch, False)
+
+	def switch(self, room) :
+		if room == '*' :
+			for ch in self.roomchannels.values() :
+				self.GPIO.output(ch, True)
+		else :
+
+			if room in self.roomchannels :
+				ch_on = self.roomchannels[room]
+				for ch in self.roomchannels.values() :
+					if ch == ch_on :
+						self.GPIO.output(ch, True)
+					else :
+						self.GPIO.output(ch, False)
+			else :
+				for ch in self.roomchannels.values() :
+					self.GPIO.output(ch, False)
 if __name__ == '__main__' :
+	# todo switch to optparse
 	try :
 		sub = zmqsub.JSONZMQPub(sys.argv[1])
 		try :
@@ -69,12 +103,24 @@ if __name__ == '__main__' :
 		sys.exit(1)
 
 	rs = RecordingSet(recordings)
+	try :
+		switcher = RPIGPIOSwitcher()
+	except ImportError :
+		switcher = None
 
 	while True :
 		try :
 			msg = sub.recv()
 			print 'recvd message %s' % msg
 			if 'text' in msg and 'pitch' in msg :
+				if switcher :
+					# TODO switch this to a list, should be able to do any subset
+					if 'rooms' in msg :
+						rooms = msg['rooms']
+					else :
+						rooms = '*'
+
+					switcher.switch(rooms)
 				if rs.play(msg['text']) :
 					continue
 
