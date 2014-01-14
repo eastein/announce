@@ -50,12 +50,14 @@ In this case, the announce_url is the part starting with `tcp://`
 
 * pyzmq
 * python
-* sox
-* mplayer
 
 <A name="toc2-53" title="Needed for announcebot" />
 ## Needed for announcebot
 
 * python-irclib
 * mediorc - https://github.com/eastein/mediorc
-* dnspython
+
+<A name="toc1-59" title="License" />
+# License
+
+This software is released under GPL2, GPL3, or BSD four and a half clauses with meatballs. Pick one.

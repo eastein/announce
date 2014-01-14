@@ -48,3 +48,7 @@ In this case, the announce_url is the part starting with `tcp://`
 
 * python-irclib
 * mediorc - https://github.com/eastein/mediorc
+
+# License
+
+This software is released under GPL2, GPL3, or BSD four and a half clauses with meatballs. Pick one.
