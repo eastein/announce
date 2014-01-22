@@ -16,11 +16,11 @@ class JSONZMQSub(object) :
 		r = [self.s]
 		msg = None
 		while r :
-			r, w, x = zmq.core.poll.select([self.s], [], [], 0.0)
+			r, w, x = zmq.select([self.s], [], [], 0.0)
 			if r :
 				msg = self.s.recv()
 
-		r, w, x = zmq.core.poll.select([self.s], [], [], 0.05)
+		r, w, x = zmq.select([self.s], [], [], 0.05)
 		if r :
 			msg = self.s.recv()
 
@@ -31,7 +31,7 @@ class JSONZMQSub(object) :
 
 	def recv(self) :
 		msg = None
-		r, w, x = zmq.core.poll.select([self.s], [], [], 0.0)
+		r, w, x = zmq.select([self.s], [], [], 0.0)
 		if r :
 			msg = self.s.recv()
 			self._last = json.loads(msg)
@@ -57,7 +57,7 @@ class JSONZMQPub(object) :
 
 	def recv(self) :
 		msg = None
-		r, w, x = zmq.core.poll.select([self.s], [], [], 0.0)
+		r, w, x = zmq.select([self.s], [], [], 0.0)
 		if r :
 			msg = self.s.recv()
 			self._last = json.loads(msg)
@@ -73,6 +73,6 @@ class JSONZMQConnectPub(object) :
 
 	# unreliable send, but won't block forever.
 	def send(self, msg) :
-		r, w, x = zmq.core.poll.select([], [self.s], [], 10.0)
+		r, w, x = zmq.select([], [self.s], [], 10.0)
 		if w :
 			self.s.send(json.dumps(msg))

@@ -37,12 +37,8 @@ In this case, the announce_url is the part starting with `tcp://`
 
 ## Needed for announced
 
-* Festival, 2.1 sounds best. http://www.cstr.ed.ac.uk/downloads/festival/2.1/
-
-## Needed for all
-
-* pyzmq
-* python
+* python libraries - install via requirements.pip
+* espeak or Festival. Either one will work. Espeak will be selected if both are available. If you use festival, 2.1 is suggested for better voices.
 
 ## Needed for announcebot
 

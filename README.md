@@ -43,21 +43,16 @@ In this case, the announce_url is the part starting with `tcp://`
 <A name="toc2-42" title="Needed for announced" />
 ## Needed for announced
 
-* Festival, 2.1 sounds best. http://www.cstr.ed.ac.uk/downloads/festival/2.1/
+* python libraries - install via requirements.pip
+* espeak or Festival. Either one will work. Espeak will be selected if both are available. If you use festival, 2.1 is suggested for better voices.
 
-<A name="toc2-47" title="Needed for all" />
-## Needed for all
-
-* pyzmq
-* python
-
-<A name="toc2-53" title="Needed for announcebot" />
+<A name="toc2-48" title="Needed for announcebot" />
 ## Needed for announcebot
 
 * python-irclib
 * mediorc - https://github.com/eastein/mediorc
 
-<A name="toc1-59" title="License" />
+<A name="toc1-54" title="License" />
 # License
 
 This software is released under GPL2, GPL3, or BSD four and a half clauses with meatballs. Pick one.
