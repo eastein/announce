@@ -3,7 +3,7 @@
 import time
 import sys
 import json
-import zmqsub
+from zmqfan import zmqsub
 import subprocess
 import distutils.spawn
 

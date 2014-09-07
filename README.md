@@ -17,7 +17,7 @@ In this case, if those files are in the working directory from which **announced
 
 Messages sent to the **announced** daemon have 2 required arguments: `text` and `pitch`.  Pitch is currently not used when a file is matched.
 
-    import zmqsub
+    from zmqfan import zmqsub
     spk = zmqsub.JSONZMQConnectPub('tcp://*:4900')
     spk.send({'text': 'flee for your lives, puny mortals', 'pitch' : 0})
 

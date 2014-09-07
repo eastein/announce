@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import mediorc
-import zmqsub
+from zmqfan import zmqsub
 import sys
 import throttle_lib
 
